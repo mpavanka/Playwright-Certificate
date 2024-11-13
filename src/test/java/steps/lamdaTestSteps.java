@@ -4,6 +4,7 @@ import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.BoundingBox;
 import io.cucumber.java.Before;
+import io.cucumber.java.BeforeAll;
 import pages.LamdaTestPages;
 
 import static org.junit.Assert.assertEquals;
@@ -14,12 +15,12 @@ public class lamdaTestSteps {
 
     String variable;
     String validationMessage;
-    LamdaTestPages lamdaTestPages = new LamdaTestPages();
+    LamdaTestPages lamdaTestPages ;
     Page page;
 
-    @Before
-    public void before() {
-        this.page = lamdaTestPages.getPage();
+    public lamdaTestSteps(Page page) {
+        lamdaTestPages = new LamdaTestPages();
+        this.page = page;
     }
 
     public void selectStageFromForm(String val) {

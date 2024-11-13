@@ -13,21 +13,18 @@ public class LamdaTestPages {
 
     commonconfigs cc = new commonconfigs();
     Page page;
-    lamdaTestSteps lamdaTestSteps = new lamdaTestSteps();
+    lamdaTestSteps lamdaTestSteps;
 
     @Before
     public void beforeAll(){
         cc.openBrowser();
         page = cc.getPage();
+        lamdaTestSteps = new lamdaTestSteps(page);
     }
 
     @After
     public void after(){
         cc.teardown();
-    }
-
-    public Page getPage(){
-        return this.page;
     }
 
     @Given("Open the {string}")
