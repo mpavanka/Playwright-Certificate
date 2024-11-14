@@ -11,23 +11,13 @@ repositories {
 
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.10.0')
-    testImplementation 'org.junit.jupiter:junit-jupiter:4.13.0'
-    testImplementation 'org.junit.jupiter:junit-jupiter-engine:4.13.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.4.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.4.2'
     testImplementation 'io.cucumber:cucumber-java:7.18.1'
-    testImplementation 'io.cucumber:cucumber-junit:7.18.1'
-    testImplementation 'io.cucumber:cucumber-junit-platform-engine:7.18.1'
+    testImplementation 'io.cucumber:cucumber-core:7.18.1'
+    testImplementation 'io.cucumber:cucumber-testng:7.18.0'
+    testImplementation 'org.testng:testng:7.10.2'
     testImplementation 'org.slf4j:slf4j-jdk14:2.0.7'
-    implementation 'com.microsoft.playwright:playwright:1.47.0'
-    implementation 'io.cucumber:cucumber-testng:7.18.0'
-    testImplementation 'org.testng:testng:7.7.1'
-}
-
-sourceSets {
-     test {
-        resources {
-            srcDirs = ['src/test/resources/features']
-        }
-    }
 }
 
 dependencies {
@@ -35,13 +25,8 @@ dependencies {
 }
 
 test {
-    useTestNG {
-        suites 'testng.xml'
+    useTestNG()
+    testLogging {
+        events "passed", "failed", "skipped", "standardOut", "standardError"
     }
-}
-
-
-test {
-    useJUnitPlatform()
-    maxParallelForks = Runtime.runtime.availableProcessors()
 }

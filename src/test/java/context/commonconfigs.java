@@ -12,7 +12,7 @@ public class commonconfigs {
         playwright = Playwright.create();
         String browserType = System.getProperty("BrowserType");
         boolean headLess = Boolean.parseBoolean((System.getProperty("headLess")));
-        switch (browserType){
+        switch ("chrome"){
             case "chrome" -> {
                 browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("chromium").setHeadless(headLess));
             }

@@ -13,6 +13,7 @@ import org.testng.annotations.Test;
 )
 public class TestNGCucumberRunner extends AbstractTestNGCucumberTests {
 
+    @Test
     @Override
     @DataProvider(parallel = true) // Enable parallel execution
     public Object[][] scenarios() {

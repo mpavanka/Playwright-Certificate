@@ -3,11 +3,9 @@ package steps;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.options.BoundingBox;
-import io.cucumber.java.Before;
-import io.cucumber.java.BeforeAll;
 import pages.LamdaTestPages;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 
 public class lamdaTestSteps {
@@ -74,7 +72,7 @@ public class lamdaTestSteps {
     }
 
     public void validateErrorMesssage(String message) {
-        assertEquals("getting submitted with zero parameters..", validationMessage, message);
+        assertEquals( validationMessage, message);
     }
 
     public void fillManditoryParams() {
@@ -92,7 +90,7 @@ public class lamdaTestSteps {
     }
 
     public void validateSucessMessage(String sucessessage) {
-        assertEquals("form failed to submit", (page.locator("[class=\"success-msg hidden\"]")).textContent(), sucessessage);
+        assertEquals((page.locator("[class=\"success-msg hidden\"]")).textContent(), sucessessage);
     }
 
 
