@@ -11,73 +11,59 @@ import java.net.URLEncoder;
 
 public class commonconfigs {
 
-    Page page;
-    String cdpUrl;
-    Browser browser;
-    BrowserContext context;
-    Playwright playwright;
-    BrowserType browserType;
+    private Page page;
+    private String cdpUrl;
+    private Browser browser;
+    private BrowserContext context;
+    private Playwright playwright;
+    private BrowserType browserType;
+    private final String username = "pavankalyan68335";
+    private final String accessKey = "CtSOjmjSWEH8nb5P1izMThNjbHdGVC2fcoZ2Is3HtKDlxAieCK";
 
-
-    String username = "pavankalyan68335";
-    String accesskey = "CtSOjmjSWEH8nb5P1izMThNjbHdGVC2fcoZ2Is3HtKDlxAieCK";
-    RemoteWebDriver driver = null;
-    String gridURL = "@hub.lambdatest.com/wd/hub";
-    boolean status = false;
+    public commonconfigs() {
+    }
 
     public void openBrowser() {
         playwright = Playwright.create();
-        this.lamdaSetup();
-//        String browserType = System.getenv("BrowserType");
-        System.out.println("BrowserType: " + browserType);
-        boolean headLess = Boolean.parseBoolean((System.getProperty("headLess")));
-
-        switch ("edge") {
-            case "chrome" -> {
-                browserType = playwright.chromium();
-
-            }
-            case "edge" ->
-                    browserType = playwright.webkit();
-            case "webkit" ->
-                    browser = playwright.webkit().launch(new BrowserType.LaunchOptions().setHeadless(headLess));
-            case "Firefox" ->
-                    browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headLess));
-            default -> throw new IllegalArgumentException("Browser not supported: " + browserType);
-        }
-        browser = browserType.connect(cdpUrl)
-       ;
+        lamdaSetup();
+        String browserTypeString = System.getProperty("BrowserType");
+        System.out.println("BrowserType: " + browserTypeString);
+        boolean headless = Boolean.parseBoolean(System.getProperty("headLess"));
+        browserType = getBrowserType(browserTypeString);
+        browser = browserType.connect(cdpUrl);
+        browser = browserType.launch(new BrowserType.LaunchOptions().setHeadless(headless));
         context = browser.newContext();
+        page = context.newPage();
+        page.setViewportSize(1920, 1080);
+    }
 
+    private BrowserType getBrowserType(String browserTypeString) {
+        return switch (browserTypeString.toLowerCase()) {
+            case "chrome" -> playwright.chromium();
+            case "webkit" -> playwright.webkit();
+            case "firefox" -> playwright.firefox();
+            default -> throw new IllegalArgumentException("Browser not supported: " + browserTypeString);
+        };
     }
 
     public Page getPage() {
-        return page = browser.newPage();
+        return page;
     }
 
-
-    public void lamdaSetup() {
+    private void lamdaSetup() {
         JsonObject capabilities = new JsonObject();
         JsonObject ltOptions = new JsonObject();
-//
-//        String user = System.getenv("LT_USERNAME");
-//        String accessKey = System.getenv("LT_ACCESS_KEY");
 
-        capabilities.addProperty("browsername", "Chrome"); // Browsers allowed: `Chrome`, `MicrosoftEdge`, `pw-chromium`, `pw-firefox` and `pw-webkit`
+        capabilities.addProperty("browserName", "Chrome"); // Browsers allowed: `Chrome`, `MicrosoftEdge`, `pw-chromium`, `pw-firefox` and `pw-webkit`
         capabilities.addProperty("browserVersion", "latest");
         ltOptions.addProperty("platform", "Windows 10");
         ltOptions.addProperty("name", "Playwright Test");
         ltOptions.addProperty("build", "Playwright Java Build");
         ltOptions.addProperty("user", username);
-        ltOptions.addProperty("accessKey", accesskey);
+        ltOptions.addProperty("accessKey", accessKey);
         capabilities.add("LT:Options", ltOptions);
 
-//        BrowserType chromium = playwright.chromium();
-//        String caps = URLEncoder.encode(capabilities.toString(), "utf-8");
-         cdpUrl = "wss://cdp.lambdatest.com/playwright?capabilities=" + capabilities;
-//        browser = chromium.connect(cdpUrl);
-
-
+        cdpUrl = "wss://cdp.lambdatest.com/playwright?capabilities=" + capabilities;
     }
 
     public void teardown() {
