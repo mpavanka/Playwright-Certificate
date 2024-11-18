@@ -1,67 +1,63 @@
 package context;
 
+import com.google.gson.JsonObject;
 import com.microsoft.playwright.*;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class commonconfigs {
 
-    Page page;
-    Browser browser;
-    BrowserContext context;
-    Playwright playwright;
+    private Page page;
+    private String cdpUrl;
+    private Browser browser;
+    private BrowserContext context;
+    private Playwright playwright;
+    private BrowserType browserType;
+    private final String username = "pavankalyan68335";
+    private final String accessKey = "CtSOjmjSWEH8nb5P1izMThNjbHdGVC2fcoZ2Is3HtKDlxAieCK";
 
-    String username = "pavankalyan68335";
-    String accesskey = "CtSOjmjSWEH8nb5P1izMThNjbHdGVC2fcoZ2Is3HtKDlxAieCK";
-    RemoteWebDriver driver = null;
-    String gridURL = "@hub.lambdatest.com/wd/hub";
-    boolean status = false;
+    public commonconfigs() {
+    }
 
     public void openBrowser() {
-        this.lamdaSetup();
         playwright = Playwright.create();
-        String browserType = System.getenv("BrowserType");
-        System.out.println("BrowserType: " + browserType);
-        boolean headLess = Boolean.parseBoolean((System.getProperty("headLess")));
-        switch ("chrome") {
-            case "chrome" -> {
-                browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("chromium").setHeadless(headLess));
-            }
-            case "edge" ->
-                    browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setChannel("msedge").setHeadless(headLess));
-            case "webkit" ->
-                    browser = playwright.webkit().launch(new BrowserType.LaunchOptions().setHeadless(headLess));
-            case "Firefox" ->
-                    browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headLess));
-            default -> throw new IllegalArgumentException("Browser not supported: " + browserType);
-        }
+        lamdaSetup();
+        String browserTypeString = System.getProperty("BrowserType");
+        System.out.println("BrowserType: " + browserTypeString);
+        boolean headless = Boolean.parseBoolean(System.getProperty("headLess"));
+        browserType = getBrowserType(browserTypeString);
+        browser = browserType.connect(cdpUrl);
+        browser = browserType.launch(new BrowserType.LaunchOptions().setHeadless(headless));
         context = browser.newContext();
         page = context.newPage();
+        page.setViewportSize(1920, 1080);
+    }
+
+    private BrowserType getBrowserType(String browserTypeString) {
+        return switch (browserTypeString.toLowerCase()) {
+            case "chrome" -> playwright.chromium();
+            case "webkit" -> playwright.webkit();
+            case "firefox" -> playwright.firefox();
+            default -> throw new IllegalArgumentException("Browser not supported: " + browserTypeString);
+        };
     }
 
     public Page getPage() {
         return page;
     }
 
+    private void lamdaSetup() {
+        JsonObject capabilities = new JsonObject();
+        JsonObject ltOptions = new JsonObject();
 
-    public void lamdaSetup() {
-        DesiredCapabilities capabilities = new DesiredCapabilities();
-        capabilities.setCapability("browserName", "chrome");
-        capabilities.setCapability("version", "130");
-        capabilities.setCapability("platform", "win11"); // If this cap isn't specified, it will just get any available one.
-        capabilities.setCapability("build", "LambdaTestSampleApp");
-        capabilities.setCapability("name", "LambdaTestJavaSample");
-        try {
-            driver = new RemoteWebDriver(new URL("https://" + username + ":" + accesskey + gridURL), capabilities);
-        } catch (MalformedURLException e) {
-            System.out.println("Invalid grid URL");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        capabilities.addProperty("browserName", "Chrome"); // Browsers allowed: `Chrome`, `MicrosoftEdge`, `pw-chromium`, `pw-firefox` and `pw-webkit`
+        capabilities.addProperty("browserVersion", "latest");
+        ltOptions.addProperty("platform", "Windows 11");
+        ltOptions.addProperty("name", "Playwright Test");
+        ltOptions.addProperty("build", "Playwright Java Build");
+        ltOptions.addProperty("user", username);
+        ltOptions.addProperty("accessKey", accessKey);
+        capabilities.add("LT:Options", ltOptions);
 
+        cdpUrl = "wss://cdp.lambdatest.com/playwright?capabilities=" + capabilities;
     }
 
     public void teardown() {
@@ -71,4 +67,3 @@ public class commonconfigs {
         playwright.close();
     }
 }
-
