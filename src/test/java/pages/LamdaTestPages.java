@@ -8,6 +8,8 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import steps.lamdaTestSteps;
 
+import java.io.UnsupportedEncodingException;
+
 
 public class LamdaTestPages {
 
@@ -16,7 +18,7 @@ public class LamdaTestPages {
     lamdaTestSteps lamdaTestSteps;
 
     @Before
-    public void beforeAll(){
+    public void beforeAll() throws UnsupportedEncodingException {
         cc.openBrowser();
         page = cc.getPage();
         lamdaTestSteps = new lamdaTestSteps(page);
